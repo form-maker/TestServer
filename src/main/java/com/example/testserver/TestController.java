@@ -6,6 +6,7 @@ import com.example.testserver.dto.response.*;
 import com.example.testserver.exception.CustomException;
 import com.example.testserver.exception.ErrorCode;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -82,15 +83,24 @@ public class TestController {
 
     @ApiOperation(value = "전체 조회(사용자 입장)")
     @GetMapping("/survey/main")
-    public ResponseEntity<ResponseMessage>getMainList(){
+    public ResponseEntity<ResponseMessage>getMainList(SortTypeEnum sortBy, boolean isAsc, int page, int size){
         List<SurveyCardResponseDto> mainList = new ArrayList<>();
+        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, sortBy.getColumn());
+        Pageable pageable = PageRequest.of(page-1, size, sort);
         SurveyCardResponseDto survey;
         for(int i = 0; i < 10; i++){
             survey = new SurveyCardResponseDto((long)i, "이거좀 해주세요"+i, "대충 이런 설문입니다."+i, null, (long)(20-(i*2)), LocalDateTime.now().minusDays(i), null);
             mainList.add(survey);
         }
 
-        ResponseMessage responseMessage = new ResponseMessage("조회 성공", 200, mainList);
+        int start = (int)pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), mainList.size());
+        Page<SurveyCardResponseDto> surveyPage = new PageImpl<>(mainList.subList(start, end), pageable, mainList.size());
+
+        DataPageResponse<SurveyCardResponseDto> response = new DataPageResponse<>(surveyPage);
+
+        ResponseMessage responseMessage = new ResponseMessage("조회 성공", 200, response);
         return new ResponseEntity<>(responseMessage , HttpStatus.OK);
     }
 
@@ -104,16 +114,28 @@ public class TestController {
 
 
     @ApiOperation(value = "전체 조회(설문 생성자 입장)")
-    @GetMapping("/survey/list")
-    public ResponseEntity<ResponseMessage>getSurveyList(){
+    @GetMapping("/survey/mypage")
+    public ResponseEntity<ResponseMessage>getSurveyList(SortTypeEnum sortBy, boolean isAsc, int page, int size){
+        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, sortBy.getColumn());
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+
+
         List<SurveyCardResponseDto> mainList = new ArrayList<>();
         SurveyCardResponseDto survey;
         for(int i = 0; i < 10; i++){
             survey = new SurveyCardResponseDto((long)i, "이거좀 해주세요"+i, "대충 이런 설문입니다."+i, 10+i, (long)(20-(i*2)), LocalDateTime.now().minusDays(i), i%3!=0);
             mainList.add(survey);
         }
+        int start = (int)pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), mainList.size());
 
-        ResponseMessage responseMessage = new ResponseMessage("", 200, mainList);
+        Page<SurveyCardResponseDto> surveyPage = new PageImpl<>(mainList.subList(start, end), pageable, mainList.size());
+
+        DataPageResponse<SurveyCardResponseDto> response = new DataPageResponse<>(surveyPage);
+
+        ResponseMessage responseMessage = new ResponseMessage("", 200, response);
         return new ResponseEntity<>(responseMessage , HttpStatus.OK);
     }
 
