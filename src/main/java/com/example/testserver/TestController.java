@@ -13,7 +13,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -90,7 +93,9 @@ public class TestController {
         Pageable pageable = PageRequest.of(page-1, size, sort);
         SurveyCardResponseDto survey;
         for(int i = 0; i < 10; i++){
-            survey = new SurveyCardResponseDto((long)i, "이거좀 해주세요"+i, "대충 이런 설문입니다."+i, null, (long)(20-(i*2)), LocalDateTime.now().minusDays(i), null);
+            LocalDateTime createdAt = LocalDateTime.now().minusDays(i);
+            LocalDate deadLine = LocalDate.now().plusDays(i*(i%2));
+            survey = new SurveyCardResponseDto((long)i, "이거좀 해주세요"+i, "대충 이런 설문입니다."+i, null, 20+(2*(1+(i%5))), deadLine, Period.between(LocalDate.from(createdAt), deadLine).getDays(), createdAt , null);
             mainList.add(survey);
         }
 
@@ -125,7 +130,10 @@ public class TestController {
         List<SurveyCardResponseDto> mainList = new ArrayList<>();
         SurveyCardResponseDto survey;
         for(int i = 0; i < 10; i++){
-            survey = new SurveyCardResponseDto((long)i, "이거좀 해주세요"+i, "대충 이런 설문입니다."+i, 10+i, (long)(20-(i*2)), LocalDateTime.now().minusDays(i), i%3!=0);
+            LocalDateTime createdAt = LocalDateTime.now().minusDays(i);
+            LocalDate deadLine = LocalDate.now().plusDays(i*(i%2));
+            Integer dDay = Period.between(LocalDate.from(createdAt), deadLine).getDays();
+            survey = new SurveyCardResponseDto((long)i, "이거좀 해주세요"+i, "대충 이런 설문입니다."+i, 10+i, 20*(i%2), deadLine, dDay, createdAt , dDay == 0);
             mainList.add(survey);
         }
         int start = (int)pageable.getOffset();

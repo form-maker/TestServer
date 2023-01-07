@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
@@ -18,7 +19,9 @@ public class SurveyCardResponseDto {
     private String title; //제목
     private String summary; //설명
     private Integer achievement; //달성 인원
-    private Long deadLine;
+    private Integer participant;
+    private LocalDate deadLine;
+    private Integer dDay;
     private LocalDateTime createdAt;
     private Boolean isDone;
 }
