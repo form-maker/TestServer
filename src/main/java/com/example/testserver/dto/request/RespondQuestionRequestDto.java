@@ -1,6 +1,6 @@
 package com.example.testserver.dto.request;
 
-import com.example.testserver.QuestionTypeEnum;
+import com.example.testserver.type.QuestionTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

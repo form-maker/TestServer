@@ -14,7 +14,8 @@ import java.util.List;
 @Builder
 public class SurveyRequestDto {
     private String title;
-    private LocalDate deadLine;
+    private LocalDate startedAt;
+    private LocalDate endedAt;
     private Integer achievement;
     private String summary;
     private List<CreateQuestionRequestDto> questionList;

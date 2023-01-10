@@ -1,6 +1,6 @@
 package com.example.testserver.dto.request;
 
-import com.example.testserver.QuestionTypeEnum;
+import com.example.testserver.type.QuestionTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,10 +12,10 @@ import java.util.List;
 @Getter
 public class CreateQuestionRequestDto {
     private QuestionTypeEnum questionType;
-    private Integer questionNum;
-    private Integer minValue;
-    private Integer maxValue;
     private String questionTitle;
+    private Integer questionNum;
+    private Integer volume;
+    private Integer groupNum;
     private List<AnswerRequestDto> answerList;
 
 }

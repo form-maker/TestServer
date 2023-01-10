@@ -5,6 +5,10 @@ import com.example.testserver.dto.request.*;
 import com.example.testserver.dto.response.*;
 import com.example.testserver.exception.CustomException;
 import com.example.testserver.exception.ErrorCode;
+import com.example.testserver.type.AnswerTypeEnum;
+import com.example.testserver.type.QuestionTypeEnum;
+import com.example.testserver.type.SortTypeEnum;
+import com.example.testserver.type.StatusTypeEnum;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
@@ -13,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
@@ -86,21 +89,32 @@ public class TestController {
 
     @ApiOperation(value = "전체 조회(사용자 입장)")
     @GetMapping("/survey/main")
-    public ResponseEntity<ResponseMessage>getMainList(SortTypeEnum sortBy, boolean isAsc, int page, int size){
+    public ResponseEntity<ResponseMessage>getMainList(SortTypeEnum sortBy,  int page, int size){
         List<SurveyCardResponseDto> mainList = new ArrayList<>();
-        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Sort sort = Sort.by(direction, sortBy.getColumn());
+        Sort sort = Sort.by(Sort.Direction.ASC, sortBy.getColumn());
         Pageable pageable = PageRequest.of(page-1, size, sort);
         SurveyCardResponseDto survey;
-        for(int i = 0; i < 10; i++){
-            LocalDateTime createdAt = LocalDateTime.now().minusDays(i);
-            LocalDate deadLine = LocalDate.now().plusDays(i*(i%2));
-            survey = new SurveyCardResponseDto((long)i, "이거좀 해주세요"+i, "대충 이런 설문입니다."+i, null, 20+(2*(1+(i%5))), deadLine, Period.between(LocalDate.from(createdAt), deadLine).getDays(), createdAt , null);
+        for(int i = 0; i < 100; i++){
+            LocalDate startedAt = LocalDate.now().minusDays(i%30);
+            LocalDate endedAt = LocalDate.now().plusDays(i%31);
+            int dDay = Period.between(LocalDate.from(startedAt), endedAt).getDays();
+            survey = SurveyCardResponseDto.builder()
+                    .surveyId((long)i)
+                    .title("설문 제목 부분입니다 "+ i)
+                    .summary("설문에 대한 설명입니다. 대충 이이이러한 설문입니다. " + i)
+                    .startedAt(startedAt)
+                    .endedAt(endedAt)
+                    .dDay(dDay)
+                    .participant((i+10)%34 + (i*3)%10)
+                    .createdAt(startedAt.minusDays(i%3))
+                    .build();
             mainList.add(survey);
         }
 
         int start = (int)pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), mainList.size());
+
+        System.out.println(start + " " + end);
         Page<SurveyCardResponseDto> surveyPage = new PageImpl<>(mainList.subList(start, end), pageable, mainList.size());
 
         DataPageResponse<SurveyCardResponseDto> response = new DataPageResponse<>(surveyPage);
@@ -119,21 +133,35 @@ public class TestController {
 
 
     @ApiOperation(value = "전체 조회(설문 생성자 입장)")
-    @GetMapping("/survey/mypage")
-    public ResponseEntity<ResponseMessage>getSurveyList(SortTypeEnum sortBy, boolean isAsc, int page, int size){
-        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Sort sort = Sort.by(direction, sortBy.getColumn());
+    @GetMapping("/survey/my-page")
+    public ResponseEntity<ResponseMessage>getSurveyList(SortTypeEnum sortBy, int page, int size){
+        Sort sort = Sort.by(Sort.Direction.ASC, sortBy.getColumn());
         Pageable pageable = PageRequest.of(page, size, sort);
 
 
 
         List<SurveyCardResponseDto> mainList = new ArrayList<>();
         SurveyCardResponseDto survey;
-        for(int i = 0; i < 10; i++){
-            LocalDateTime createdAt = LocalDateTime.now().minusDays(i);
-            LocalDate deadLine = LocalDate.now().plusDays(i*(i%2));
-            Integer dDay = Period.between(LocalDate.from(createdAt), deadLine).getDays();
-            survey = new SurveyCardResponseDto((long)i, "이거좀 해주세요"+i, "대충 이런 설문입니다."+i, 10+i, 20*(i%2), deadLine, dDay, createdAt , dDay == 0);
+        for(int i = 1; i < 10; i++){
+            LocalDate startedAt = LocalDate.now().minusDays(i%30);
+            LocalDate endedAt = LocalDate.now().plusDays(i%31);
+            int dDay = Period.between(LocalDate.from(startedAt), endedAt).getDays();
+            int achievement = 30*i%50;
+            int participant = (i+10)%34 + (i*3)%10;
+            survey = SurveyCardResponseDto.builder()
+                    .surveyId((long)i)
+                    .title("설문 제목 부분입니다 "+ i)
+                    .summary("설문에 대한 설명입니다. 대충 이이이러한 설문입니다. " + i)
+                    .startedAt(startedAt)
+                    .endedAt(endedAt)
+                    .dDay(dDay)
+                    .participant(participant)
+                    .achievement(achievement)
+                    .achievementRate(achievement/participant)
+                    .createdAt(startedAt.minusDays(i%3))
+                    .status(LocalDate.now().isAfter(startedAt)? StatusTypeEnum.IN_PROCEED : StatusTypeEnum.NOT_START)
+                    .build();
+
             mainList.add(survey);
         }
         int start = (int)pageable.getOffset();
@@ -171,23 +199,23 @@ public class TestController {
         Integer questionNum = (int)(questionId%7);
         System.out.println(questionNum);
         QuestionTypeEnum questionType = switch (questionNum) {
-            case 1 -> QuestionTypeEnum.MultipleChoice;
-            case 2 -> QuestionTypeEnum.SingleChoice;
-            case 3 -> QuestionTypeEnum.Slide;
-            case 4 -> QuestionTypeEnum.Rank;
-            case 5 -> QuestionTypeEnum.ShortDescriptive;
-            case 6 -> QuestionTypeEnum.LongDescriptive;
-            case 0 -> QuestionTypeEnum.Star;
+            case 1 -> QuestionTypeEnum.MULTIPLE_CHOICE;
+            case 2 -> QuestionTypeEnum.SINGLE_CHOICE;
+            case 3 -> QuestionTypeEnum.SLIDE;
+            case 4 -> QuestionTypeEnum.RANK;
+            case 5 -> QuestionTypeEnum.SHORT_DESCRIPTIVE;
+            case 6 -> QuestionTypeEnum.LONG_DESCRIPTIVE;
+            case 0 -> QuestionTypeEnum.STAR;
             default -> null;
         };
         AnswerResponseDto answer;
         for(int i = 0; i < questionType.getAnswerLen(); i++){
-            answer = new AnswerResponseDto((long)i+20, i, questionId%3==0?AnswerTypeEnum.Image:AnswerTypeEnum.Text, questionId%3==0?null:"문항"+i, questionId%3==0?"/img/cat.jpg":null);
+            answer = new AnswerResponseDto((long)i+20, i, questionId%3==0? AnswerTypeEnum.IMAGE :AnswerTypeEnum.TEXT, questionId%3==0?null:"문항"+i, questionId%3==0?"/img/cat.jpg":null);
             answerList.add(answer);
         }
 
 
-        QuestionResponseDto questionResponseDto = new QuestionResponseDto(questionId, questionType, questionNum, questionType.getMinValue(), questionType.getMaxValue(), questionType.getQuestionTitle(), answerList);
+        QuestionResponseDto questionResponseDto = new QuestionResponseDto(questionId, questionType, questionNum, questionType.getVolume(), questionType.getQuestionTitle(), answerList);
         ResponseMessage responseMessage = new ResponseMessage("설문 조회 성공", 200, questionResponseDto );
         return new ResponseEntity<>(responseMessage , HttpStatus.OK);
     }

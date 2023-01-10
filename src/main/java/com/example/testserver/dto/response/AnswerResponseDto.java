@@ -1,6 +1,6 @@
 package com.example.testserver.dto.response;
 
-import com.example.testserver.AnswerTypeEnum;
+import com.example.testserver.type.AnswerTypeEnum;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

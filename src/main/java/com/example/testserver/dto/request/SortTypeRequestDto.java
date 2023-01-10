@@ -1,6 +1,6 @@
 package com.example.testserver.dto.request;
 
-import com.example.testserver.SortTypeEnum;
+import com.example.testserver.type.SortTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
