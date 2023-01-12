@@ -12,9 +12,8 @@ import java.util.List;
 @Getter
 public class RespondQuestionRequestDto {
     private QuestionTypeEnum questionType;
-    private Integer questionNum;
-    private Integer choice;
-    private Integer value; //choice와 합쳐도 될듯
-    private String descriptive;
+    private String questionTitle;
+    private String questionSummary;
+    private Integer value;
     private List<Integer> rank;
 }

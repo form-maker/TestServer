@@ -13,9 +13,7 @@ import java.util.List;
 public class CreateQuestionRequestDto {
     private QuestionTypeEnum questionType;
     private String questionTitle;
-    private Integer questionNum;
     private Integer volume;
-    private Integer groupNum;
-    private List<AnswerRequestDto> answerList;
+    private List<String> answerList;
 
 }
