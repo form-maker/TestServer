@@ -10,10 +10,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class RespondQuestionRequestDto {
+public class ReplyRequestDto {
     private QuestionTypeEnum questionType;
     private String questionTitle;
     private String questionSummary;
-    private Integer value;
-    private List<Integer> rank;
+    private List<Integer> selectValue;
+    private String descriptive;
 }

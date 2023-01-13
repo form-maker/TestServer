@@ -12,11 +12,11 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Builder
-public class SurveyRequestDto {
+public class SurveyCreateRequestDto {
     private String title;
     private LocalDate startedAt;
     private LocalDate endedAt;
     private Integer achievement;
     private String summary;
-    private List<CreateQuestionRequestDto> questionList;
+    private List<QuestionCreateRequestDto> questionList;
 }

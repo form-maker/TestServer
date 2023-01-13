@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -114,7 +114,6 @@ public class TestController {
         int start = (int)pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), mainList.size());
 
-        System.out.println(start + " " + end);
         Page<SurveyCardResponseDto> surveyPage = new PageImpl<>(mainList.subList(start, end), pageable, mainList.size());
 
         DataPageResponse<SurveyCardResponseDto> response = new DataPageResponse<>(surveyPage);
@@ -125,7 +124,7 @@ public class TestController {
 
     @ApiOperation(value = "설문 생성")
     @PostMapping("/survey")
-    public ResponseEntity<ResponseMessage>createSurvey(@RequestBody SurveyRequestDto requestDto){
+    public ResponseEntity<ResponseMessage>createSurvey(@RequestBody SurveyCreateRequestDto requestDto){
 
         ResponseMessage responseMessage = new ResponseMessage("설문 생성", 200, requestDto);
         return new ResponseEntity<>(responseMessage , HttpStatus.OK);
@@ -177,7 +176,7 @@ public class TestController {
 
     @ApiOperation(value = "설문 수정")
     @PutMapping("/survey/{questionId}")
-    public ResponseEntity<ResponseMessage>updateSurvey(@RequestBody CreateQuestionRequestDto requestDto, @PathVariable Long questionId){
+    public ResponseEntity<ResponseMessage>updateSurvey(@RequestBody QuestionCreateRequestDto requestDto, @PathVariable Long questionId){
         ResponseMessage responseMessage = new ResponseMessage("설문 수정 성공", 200, requestDto);
         return new ResponseEntity<>(responseMessage , HttpStatus.OK);
     }
@@ -191,13 +190,12 @@ public class TestController {
     }
 
 
-    @ApiOperation(value = "설문 조회(1문제씩)")
-    @GetMapping("/survey")
-    public ResponseEntity<ResponseMessage>getQuestion(@RequestParam Long surveyId, @RequestParam Long questionId){
+    @ApiOperation(value = "설문 문제 조회(1문제씩)")
+    @GetMapping("/question")
+    public ResponseEntity<ResponseMessage>getQuestion(@RequestParam Long questionId){
         List<AnswerResponseDto> answerList = new ArrayList<>();
 
         Integer questionNum = (int)(questionId%7);
-        System.out.println(questionNum);
         QuestionTypeEnum questionType = switch (questionNum) {
             case 1 -> QuestionTypeEnum.MULTIPLE_CHOICE;
             case 2 -> QuestionTypeEnum.SINGLE_CHOICE;
@@ -210,19 +208,28 @@ public class TestController {
         };
         AnswerResponseDto answer;
         for(int i = 0; i < questionType.getAnswerLen(); i++){
-            answer = new AnswerResponseDto((long)i+20, i, questionId%3==0? AnswerTypeEnum.IMAGE :AnswerTypeEnum.TEXT, questionId%3==0?null:"문항"+i, questionId%3==0?"/img/cat.jpg":null);
+            answer = new AnswerResponseDto( i, AnswerTypeEnum.TEXT, "문항"+i);
             answerList.add(answer);
         }
 
 
-        QuestionResponseDto questionResponseDto = new QuestionResponseDto(questionId, questionType, questionNum, questionType.getVolume(), questionType.getQuestionTitle(), answerList);
+        QuestionResponseDto questionResponseDto = new QuestionResponseDto(questionId, questionType, questionNum, questionType.getVolume(), questionType.getQuestionTitle(), "설문 질문에 대한 설명입니다.", answerList);
         ResponseMessage responseMessage = new ResponseMessage("설문 조회 성공", 200, questionResponseDto );
         return new ResponseEntity<>(responseMessage , HttpStatus.OK);
     }
+    @ApiOperation(value = "설문 조회")
+    @GetMapping("/survey")
+    public ResponseEntity<ResponseMessage> getSurvey(@RequestParam Long surveyId){
+        List<Long> questionIdList = Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L);
+        SurveyRespnse surveyRespnse = new SurveyRespnse(surveyId, "설문 제목", "설문에 대한 설명입니다.", LocalDate.now().minusDays(3), LocalDate.now().plusDays(30), LocalDate.now().minusDays(5), 52, StatusTypeEnum.IN_PROCEED, questionIdList);
+        ResponseMessage responseMessage = new ResponseMessage("설문 조회 성공", 200, surveyRespnse);
+        return new ResponseEntity<>(responseMessage , HttpStatus.OK);
+    }
+
 
     @ApiOperation(value = "설문 응답")
     @PostMapping("/survey/{surveyId}")
-    public ResponseEntity<ResponseMessage>respondSurvey(@RequestBody List<RespondQuestionRequestDto> requestDtos){
+    public ResponseEntity<ResponseMessage>respondSurvey(@RequestBody List<ReplyRequestDto> requestDtos){
         ResponseMessage responseMessage = new ResponseMessage("설문 응답 성공", 200, requestDtos);
         return new ResponseEntity<>(responseMessage , HttpStatus.OK);
     }

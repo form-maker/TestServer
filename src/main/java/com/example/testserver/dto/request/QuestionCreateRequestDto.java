@@ -10,10 +10,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class CreateQuestionRequestDto {
+public class QuestionCreateRequestDto {
     private QuestionTypeEnum questionType;
     private String questionTitle;
     private Integer volume;
     private List<String> answerList;
-
 }
