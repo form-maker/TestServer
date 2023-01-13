@@ -13,9 +13,10 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class QuestionResponseDto {
     private Long questionId;
-    private QuestionTypeEnum questionTypeEnum;
+    private QuestionTypeEnum questionType;
     private Integer questionNum;
     private Integer volume;
     private String questionTitle;
+    private String questionSummary;
     private List<AnswerResponseDto> answerList;
 }

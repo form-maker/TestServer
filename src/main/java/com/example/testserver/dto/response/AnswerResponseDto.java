@@ -13,10 +13,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AnswerResponseDto {
-    private Long answerId;
     private Integer answerNum;
     private AnswerTypeEnum answerType;
-    private String answerText;
-    private String answerImg;
+    private String answerValue;
 
 }

@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 
 public class AnswerRequestDto {
     private Integer answerNum;
-    private AnswerTypeEnum answerType; //enum 형태에 따라 AnswerData를 저장하면 될듯
+    private AnswerTypeEnum answerType;
     private String answerValue;
 }
