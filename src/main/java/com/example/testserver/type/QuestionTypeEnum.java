@@ -11,7 +11,7 @@ public enum QuestionTypeEnum {
     SHORT_DESCRIPTIVE(null, "제목(주관식 단답형)", 0),
     LONG_DESCRIPTIVE(null, "제목(주관식 장문형)", 0),
     STAR(5, "제목(별점)", 0),
-    SCORE(5, "제목(별점)", 0);
+    SCORE(5, "제목(점수)", 0);
 
     private Integer volume;
     private String questionTitle;

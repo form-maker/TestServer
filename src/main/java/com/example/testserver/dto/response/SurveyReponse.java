@@ -16,7 +16,7 @@ import java.util.List;
 @Getter
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SurveyRespnse {
+public class SurveyReponse {
     private Long surveyId; //id
     private String title; //제목
     private String summary; //설명
@@ -25,5 +25,6 @@ public class SurveyRespnse {
     private LocalDate createdAt;
     private Integer achievement; //달성 인원
     private StatusTypeEnum status;
+    private Integer totalQuestion;
     private List<Long> questionIdList = new ArrayList<>();
 }

@@ -27,4 +27,6 @@ public class SurveyCardResponseDto {
     private Integer dDay;
     private LocalDate createdAt;
     private StatusTypeEnum status;
+    private Integer totalQuestion;
+    private Integer totalTime;
 }
