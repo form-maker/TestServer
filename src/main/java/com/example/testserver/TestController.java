@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -242,8 +243,17 @@ public class TestController {
     }
 
     @ApiOperation(value = "설문 통계")
-    @PostMapping("/survey/stats")
-    public ResponseEntity<ResponseMessage>getStats(@RequestParam Long surveyId, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end){
+    @GetMapping("/survey/stats")
+    public ResponseEntity<ResponseMessage>getStats(@RequestParam Long surveyId, @RequestParam String start, @RequestParam String end){
+        LocalDate startedAt;
+        LocalDate endedAt;
+        try{
+            startedAt = LocalDate.parse(start);
+            endedAt = LocalDate.parse(end);
+        }catch (DateTimeParseException e){
+            startedAt = LocalDate.MIN;
+            endedAt = LocalDate.MAX;
+        }
         QuestionStatsResponse multipleChoice = QuestionStatsResponse.builder()
                 .questionNum(1)
                 .questionType(QuestionTypeEnum.MULTIPLE_CHOICE)
@@ -306,8 +316,8 @@ public class TestController {
                 .satisfactionList(Arrays.asList(9.2f, 10.3f, 40.1f, 20.3f, 20.1f))
                 .build();
         DailyStatsResponse dailyStatsList = new DailyStatsResponse();
-        int temp = Period.between(LocalDate.from(start), end).getDays();
-        for(int i = 0; i < (int)ChronoUnit.DAYS.between(start, end); i++){
+        int temp = (int)ChronoUnit.DAYS.between(LocalDate.of(2023, 1, 13), LocalDate.of(2023, 3, 2));
+        for(int i = 0; i < temp; i++){
             dailyStatsList.getDate().add(LocalDate.now().minusDays(temp-i));
             dailyStatsList.getParticipant().add((10+i%23));
         }
@@ -319,8 +329,8 @@ public class TestController {
 
                 .surveyTitle("설문 제목입니다.")
                 .surveySummary("설문에 대한 설명입니다.")
-                .startedAt(LocalDate.now().minusDays(30))
-                .endedAt(end.plusDays(10))
+                .startedAt(LocalDate.of(2023, 1, 13))
+                .endedAt(LocalDate.of(2023, 3, 2))
                 .createdAt(LocalDate.now().minusDays(32))
                 .status(StatusTypeEnum.DONE)
                 .achievement(200)
