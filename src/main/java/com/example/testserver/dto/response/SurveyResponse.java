@@ -16,7 +16,7 @@ import java.util.List;
 @Getter
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SurveyReponse {
+public class SurveyResponse {
     private Long surveyId; //id
     private String title; //제목
     private String summary; //설명

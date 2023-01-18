@@ -228,8 +228,8 @@ public class TestController {
     @GetMapping("/survey")
     public ResponseEntity<ResponseMessage> getSurvey(@RequestParam Long surveyId){
         List<Long> questionIdList = Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L);
-        SurveyReponse surveyReponse = new SurveyReponse(surveyId, "설문 제목", "설문에 대한 설명입니다.", LocalDate.now().minusDays(3), LocalDate.now().plusDays(30), LocalDate.now().minusDays(5), 52, StatusTypeEnum.IN_PROCEED, 8, questionIdList);
-        ResponseMessage responseMessage = new ResponseMessage("설문 조회 성공", 200, surveyReponse);
+        SurveyResponse surveyResponse = new SurveyResponse(surveyId, "설문 제목", "설문에 대한 설명입니다.", LocalDate.now().minusDays(3), LocalDate.now().plusDays(30), LocalDate.now().minusDays(5), 52, StatusTypeEnum.IN_PROCEED, 8, questionIdList);
+        ResponseMessage responseMessage = new ResponseMessage("설문 조회 성공", 200, surveyResponse);
         return new ResponseEntity<>(responseMessage , HttpStatus.OK);
     }
 
